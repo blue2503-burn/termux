@@ -7,6 +7,6 @@ while True:
         messages = check()
         for m in messages:
             send(m)
-    except Exception:
-        send('Monitor error')
+    except Exception as e:
+        send(f'⚠️ Monitor error: {type(e).__name__}: {e}')
     time.sleep(CHECK_INTERVAL)
