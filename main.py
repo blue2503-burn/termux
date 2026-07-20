@@ -4,7 +4,10 @@ from notifier import send
 from monitor import check
 while True:
     try:
-        d=check();print(d)
+        messages = check()
+        for m in messages:
+            print(m)
+            send(m)
     except Exception:
         send('Monitor error')
         print(traceback.format_exc())
