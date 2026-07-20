@@ -49,6 +49,28 @@ def _fetch(dated="NA"):
     return r.json()
 
 
+def _fetch_all_dates():
+    """
+    dated="NA" only returns today's shows. The response also carries an
+    output.days list of every bookable date (e.g. 20th/21st/22nd) — hit the
+    API once per date and merge, so nothing beyond today gets missed.
+    """
+    first = _fetch("NA")
+    days = first.get("output", {}).get("days", [])
+    date_strs = [d.get("dt") for d in days if d.get("dt")]
+
+    if not date_strs:
+        return first
+
+    merged_sessions = []
+    for dt in date_strs:
+        day_data = first if dt == date_strs[0] else _fetch(dt)
+        merged_sessions.extend(day_data.get("output", {}).get("showTimeSessions", []))
+
+    first["output"]["showTimeSessions"] = merged_sessions
+    return first
+
+
 def _extract_sessions(data):
     """
     Pull out every show for movies matching MOVIE_KEYWORD, keyed by sessionId.
@@ -137,7 +159,7 @@ def check():
     """
     messages = []
 
-    data = _fetch()
+    data = _fetch_all_dates()
     new_sessions = _extract_sessions(data)
 
     state = _load_state()

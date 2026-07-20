@@ -1,6 +1,12 @@
-DISCORD_WEBHOOK = 'PASTE_WEBHOOK_HERE'
+DISCORD_WEBHOOK = 'https://discord.com/api/webhooks/1528756284676116550/DDr9uvKjSjThrprEKUw6we12-NkGnRVyBbFGxXMlgWdJH970VVHs4THHfHhrHs8BQ1nt'
 
-# how often to check, in seconds (1800 = 30 minutes)
+# ============================================================
+# HOW OFTEN TO CHECK — change this one number, in SECONDS.
+#   10          -> every 10 seconds
+#   60          -> every 1 minute
+#   1800        -> every 30 minutes   (default)
+#   3600        -> every 1 hour
+# ============================================================
 CHECK_INTERVAL = 1800
 
 # ---- PVR search settings ----
