@@ -150,15 +150,12 @@ def _format_diff(old_sessions, new_sessions):
     return "\n".join(lines)
 
 
-def check():
+def check_for_changes():
     """
-    Called every CHECK_INTERVAL seconds by main.py.
-    Always returns a regular status message, plus a change alert (as a
-    separate, distinctly-worded message) if anything changed since the
-    last run.
+    Called every SCAN_INTERVAL seconds. Cheap, fast: fetches, diffs against
+    the last saved snapshot, saves the new snapshot, and returns a change
+    alert string (or None if nothing changed).
     """
-    messages = []
-
     data = _fetch_all_dates()
     new_sessions = _extract_sessions(data)
 
@@ -166,12 +163,19 @@ def check():
     old_sessions = state.get("sessions", {})
 
     diff_msg = _format_diff(old_sessions, new_sessions)
-    if diff_msg:
-        messages.append(diff_msg)
-
-    messages.append(_format_summary(new_sessions))
 
     state["sessions"] = new_sessions
     _save_state(state)
 
-    return messages
+    return diff_msg
+
+
+def get_status_summary():
+    """
+    Called every CHECK_INTERVAL seconds. Returns the full "here's everything
+    right now" message, built from the last saved snapshot (no extra API
+    call needed since check_for_changes() already refreshed it).
+    """
+    state = _load_state()
+    sessions = state.get("sessions", {})
+    return _format_summary(sessions)
